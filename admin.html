@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ניהול האתר</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  body{background:var(--mist)}
+  .adm{max-width:980px;margin:0 auto;padding:24px 16px 80px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+  .tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 18px;font:600 15px var(--ff);cursor:pointer}
+  .tabs button[aria-selected="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+  .slot{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+  .slot .pv{aspect-ratio:4/3;width:100%;object-fit:cover;background:#f3eee6}
+  .slot .pv.contain{object-fit:contain;padding:10px}
+  .slot .b{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+  .slot .row{display:flex;gap:8px;flex-wrap:wrap}
+  .slot label.btn{position:relative;overflow:hidden}
+  .slot input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .fabtable{width:100%;border-collapse:collapse;font-size:14px}
+  .fabtable td,.fabtable th{border-bottom:1px solid var(--line);padding:8px;text-align:right;vertical-align:middle}
+  .fabtable img{width:44px;height:44px;object-fit:cover;border-radius:8px}
+  .busy{opacity:.55;pointer-events:none}
+  h1{font-size:30px;margin:0}
+</style>
+</head>
+<body>
+<div class="adm">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+    <h1>ניהול האתר</h1>
+    <a class="btn ghost small" href="index.html" target="_blank">לצפייה באתר ↗</a>
+  </div>
+
+  <div class="panel" id="notConfigured" hidden style="margin-top:18px">
+    <h3>האתר עוד לא מחובר לגוגל</h3>
+    <p>כדי לשמור פרטים ותמונות צריך קודם להקים את הגיליון והסקריפט בגוגל, ולהדביק את הכתובת בקובץ <code>assets/config.js</code>. ההוראות בקובץ <code>README-הקמה.md</code>.</p>
+  </div>
+
+  <div class="panel" id="login" hidden style="margin-top:18px;max-width:420px">
+    <h3>כניסה</h3>
+    <form id="loginForm" style="display:flex;flex-direction:column;gap:10px">
+      <label class="f">סיסמת ניהול<input type="password" name="key" autocomplete="current-password" required></label>
+      <button class="btn primary" type="submit">כניסה</button>
+      <div class="msg err" id="loginErr" hidden></div>
+    </form>
+  </div>
+
+  <div id="app" hidden>
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="details" aria-selected="true">פרטי העסק</button>
+      <button role="tab" data-tab="images" aria-selected="false">תמונות</button>
+      <button role="tab" data-tab="catalog" aria-selected="false">קטלוג ובדים</button>
+      <button class="link" id="logout" style="margin-inline-start:auto">יציאה</button>
+    </div>
+
+    <!-- details -->
+    <section class="panel" data-pane="details" style="padding:22px">
+      <form id="siteForm" class="form-grid">
+        <label class="f">שם העסק<input name="businessName"></label>
+        <label class="f">משפט פתיחה (כותרת ראשית)<input name="tagline"></label>
+        <label class="f">טלפון<input name="phone" placeholder="050-1234567"></label>
+        <label class="f">ווטסאפ<input name="whatsapp" placeholder="972501234567"><span class="hint">בפורמט בינלאומי, בלי + ובלי מקפים. 050-1234567 ← 972501234567</span></label>
+        <label class="f full">הודעת פתיחה בווטסאפ<input name="whatsappText"></label>
+        <label class="f">מייל<input name="email" type="email"></label>
+        <label class="f">אזור שירות<input name="serviceArea" placeholder="לדוגמה: השרון והמרכז"></label>
+        <label class="f">שעות פעילות<input name="hours" placeholder="א׳–ה׳ 9:00–18:00"></label>
+        <label class="f">אינסטגרם (קישור)<input name="instagram"></label>
+        <label class="f">פייסבוק (קישור)<input name="facebook"></label>
+        <label class="f">כותרת "עלינו"<input name="aboutTitle"></label>
+        <label class="f full">טקסט "עלינו"<textarea name="aboutText" rows="4"></textarea></label>
+        <label class="f full">הערה על המחיר<input name="priceNote"></label>
+        <label class="check full"><input type="checkbox" name="showPrices"> להציג ללקוחות הערכת מחיר</label>
+        <div class="full"><h3 style="margin:10px 0 6px">תיאור לכל סוג וילון בקטלוג</h3><div id="typeDescs" class="form-grid"></div></div>
+        <div class="full"><h3 style="margin:10px 0 6px">סוגים שמוצגים באתר</h3><div id="typeShow" style="display:flex;flex-wrap:wrap;gap:14px"></div></div>
+        <div class="full"><button class="btn primary" type="submit">שמירת פרטים</button> <span class="msg" id="siteMsg" hidden></span></div>
+      </form>
+    </section>
+
+    <!-- images -->
+    <section data-pane="images" hidden>
+      <p class="muted">אפשר להעלות מהטלפון או מהמחשב. תמונות גדולות מוקטנות אוטומטית. החלפה מוחקת את התמונה הקודמת.</p>
+      <h3>תמונות ראשיות</h3>
+      <div class="slots" id="mainSlots"></div>
+      <h3 style="margin-top:26px">תמונה לכל סוג וילון</h3>
+      <div class="slots" id="typeSlots"></div>
+      <h3 style="margin-top:26px">גלריית עבודות</h3>
+      <div class="slots" id="gallerySlots"></div>
+      <label class="btn primary" style="margin-top:14px;position:relative;overflow:hidden">+ הוספת תמונות לגלריה
+        <input type="file" id="galleryAdd" accept="image/*" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer"></label>
+      <div class="msg" id="imgMsg" hidden></div>
+    </section>
+
+    <!-- catalog -->
+    <section data-pane="catalog" hidden>
+      <div class="panel">
+        <h3>עדכון קטלוג ומחירים מרצפת הייצור</h3>
+        <p class="muted">ברצפת הייצור: הגדרות ← "הורידי גיבוי". מעלים כאן את הקובץ. לאתר עוברים רק סוגים, בדים ומחירים ללקוח. עלויות ספקים, שמות ספקים ונתוני לקוחות לא עולים.</p>
+        <input type="file" id="backupFile" accept=".json,application/json">
+        <div id="catPreview" style="margin-top:12px"></div>
+        <div class="msg" id="catMsg" hidden></div>
+      </div>
+      <div class="panel" style="margin-top:18px">
+        <h3>תמונת דוגמה לבדים (לא חובה)</h3>
+        <p class="muted">תמונה של הבד תופיע ללקוח כשהוא בוחר אותו.</p>
+        <input id="fabFilter" placeholder="חיפוש בד..." style="margin-bottom:10px">
+        <table class="fabtable"><thead><tr><th>תמונה</th><th>בד</th><th>קבוצה</th><th></th></tr></thead><tbody id="fabRows"></tbody></table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/catalog.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/catalog-build.js"></script>
+<script src="assets/admin.js"></script>
+</body>
+</html>
