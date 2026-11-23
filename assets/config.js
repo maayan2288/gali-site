@@ -73,6 +73,12 @@ window.GALI_CONFIG = {
   // תמונות קבועות שמגיעות עם האתר. תמונה שתועלה ב-admin.html תחליף אותן.
   images: {
     hero: { url: "assets/img/hero.jpg" },
-    type_t_roman: { url: "assets/img/roman/shamenet-3.jpg" }
+    type_t_roman: { url: "assets/img/roman/shamenet-3.jpg" },
+    type_t_pleat: { url: "assets/img/pleat/pleat-1.jpg" }
+  },
+
+  // תמונות של עבודות לדוגמה, מוצגות בטופס ההזמנה כשבוחרים את סוג הווילון
+  typePhotos: {
+    t_pleat: ["assets/img/pleat/pleat-1.jpg", "assets/img/pleat/pleat-2.jpg", "assets/img/pleat/pleat-3.jpg"]
   }
 };

@@ -213,6 +213,9 @@
       } else html += fabs.map(opt).join('');
       $('#fFabric').innerHTML = html; $('#fFabric').value = cur.fabricId || '';
     }
+    const exPhotos = ((window.GALI_CONFIG || {}).typePhotos || {})[t.id] || [];
+    $('#typeExamples').hidden = !exPhotos.length;
+    $('#typeGallery').innerHTML = exPhotos.map(src => `<button type="button" data-zoom="${esc(src)}" aria-label="הגדלת תמונה"><img src="${esc(src)}" alt="" loading="lazy"></button>`).join('');
     $('#readyBox').hidden = !isReadyType(t);
     $('#wBox').hidden = $('#hBox').hidden = false;
     if (isReadyType(t)) renderReady();
@@ -247,6 +250,11 @@
   }
   $('#romanSize').addEventListener('click', e => { const b = e.target.closest('[data-rs]'); if (!b) return; cur.romanReady = b.dataset.rs === 'ready'; renderTypeFields(); update(); });
   $('#readyModels').addEventListener('click', e => { const b = e.target.closest('[data-model]'); if (!b) return; cur.readyModel = b.dataset.model; renderReady(); update(); });
+  $('#typeGallery').addEventListener('click', e => {
+    const b = e.target.closest('[data-zoom]'); if (!b) return;
+    const lb = document.createElement('div'); lb.className = 'lightbox'; lb.innerHTML = `<img src="${esc(b.dataset.zoom)}" alt="">`;
+    lb.addEventListener('click', () => lb.remove()); document.body.appendChild(lb);
+  });
   $('#readyGallery').addEventListener('click', e => {
     const b = e.target.closest('[data-zoom]'); if (!b) return;
     const lb = document.createElement('div'); lb.className = 'lightbox'; lb.innerHTML = `<img src="${esc(b.dataset.zoom)}" alt="">`;
